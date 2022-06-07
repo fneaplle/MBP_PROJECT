@@ -1,0 +1,10 @@
+20220607 update
+
+1. data shape problem
+- original cardio gan's input and output shape is same (Batch Size, 512)
+- our project's input and output is PPG&EKG -> MBP (Batch, 6000, 2) -> (Batch, 30, 1)
+
+2. how to solve this problem?
+- Embedding for PPG&EKG.
+	make (6000, 2) to (30, 1)
+- Or other GAN model? 
