@@ -1,6 +1,0 @@
-1. generator를 U-Net 형태로 바꿈
-2. discriminator를 Patch-GAN 형태로 바꿈
-3. input & output 형태가 달라서 (2,6000) 데이터를 (30,)로 변경하는 embedding layer를 만들긴 했으나, 이를 optimizer로 weight update하는
-방법을 찾아야함.
-4. 임시적으로 PCA를 이용하여 진행하려 했으나 현재 오류가 있음
-
