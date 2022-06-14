@@ -8,9 +8,11 @@ import os
 
 discriminator = module.discriminator()
 generator = module.generator()
+embedding = module.embedding()
 
 generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+embedding_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 
 import datetime
 log_dir="logs/"
@@ -22,11 +24,13 @@ checkpoint_dir = './training_checkpoints'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator_optimizer=discriminator_optimizer,
+                                 embedding_optimizer=embedding_optimizer,
                                  generator=generator,
-                                 discriminator=discriminator)
+                                 discriminator=discriminator,
+                                 embedding=embedding)
 
-def generate_images(generator, example_input, example_tar, epoch):
-    prediction = generator(example_input, training=True)
+def generate_images(generator, embedded_inp, example_input, example_tar, epoch):
+    prediction = generator(embedded_inp, training=True)
     plt.figure(figsize=(15,3))
     display_list = [example_input[0][0][:500], example_input[0][1][:500], example_tar[0], prediction[0]]
     title = ['Input_EKG','Input_PPG', 'Ground True', 'Predicted Image']
@@ -37,14 +41,16 @@ def generate_images(generator, example_input, example_tar, epoch):
         plt.plot(display_list[i])
         plt.axis('off')
     plt.savefig(f'./figures/train/image{epoch}.png')
+    print('save figure complete!')
 
 @tf.function
 def train_step(input_image, target, epoch):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-        gen_output = generator(input_image, training=True)
+        embedding_inp = embedding(input_image, training=False)
+        gen_output = generator(embedding_inp, training=True)
 
-        disc_real_output = discriminator([target], training=True)
-        disc_generated_output = discriminator([gen_output], training=True)
+        disc_real_output = discriminator([embedding_inp, target], training=True)
+        disc_generated_output = discriminator([gen_output, target], training=True)
 
         gen_total_loss, gen_gan_loss, gen_l1_loss = module.generator_loss(disc_generated_output, gen_output, target)
         disc_loss = module.discriminator_loss(disc_real_output, disc_generated_output)
@@ -73,21 +79,18 @@ def fit(train_ds, epochs):
         start = time.time()
         display.clear_output(wait=True)
         
-        for example_input, example_target in pipeline.test_dataset.take(1):
-            generate_images(generator, example_input, example_target, epoch)
+        if (epoch+1)%20 == 0:
+            for example_input, example_target in pipeline.train_dataset:
+                embedded_inp = embedding(example_input)
+                generate_images(generator, embedded_inp, example_input, example_target, epoch+1)
 
         for n, (input_image, target) in pipeline.train_dataset.enumerate():
+            print(f'{n}step data training....')
             train_step(input_image, target, epoch)
         
         if(epoch+1) % 20 == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
 if __name__=='__main__':
-    fit(pipeline.train_dataset, 40)
-
-
-
-
-
-
+    fit(pipeline.train_dataset, 200)
 
