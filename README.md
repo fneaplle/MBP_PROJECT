@@ -1,5 +1,3 @@
-이 메모장은 내가 만든 코드가 무엇인지 간단하게 설명해 놓은 것이다.
-
 1. layers.py
 	한 개의 레이어들을 정의해 놓은 것이다.
 
@@ -15,8 +13,6 @@
 5. train.py
 	학습데이터로 학습대상 모델을 학습하는 공간이다.
 
-앞으로 더 해야할 것
-지금은 generator, discriminator를 그저 데모로만 만들어 놓았다.
-generator의 경우 U-Net으로, discriminator의 경우 PathGAN 형태로 만들어서 다시 학습을 진행해야 한다.
-
-fneaplle@gmail.com
+## TODO
+- [x] 지금은 generator, discriminator를 그저 데모로만 만들어 놓았다.
+- [x] generator의 경우 U-Net으로, discriminator의 경우 PathGAN 형태로 만들어서 다시 학습을 진행해야 한다.
