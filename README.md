@@ -1,8 +1,8 @@
-## MBP
+## Project Overview
 MBP 프로젝트는 ECG, PPG 시그널 데이터만을 활용하여 ABP를 예측하는 프로젝트다.
 1D-Unet을 기반으로 만들었으며, 디테일한 데이터 생성을 위해 Patch-GAN을 사용하였다.
 
-## Script 설명
+## Scripts
 ```layers.py``` 한 개의 레이어들을 정의해 놓은 것이다.
 
 ```module.py``` generator, discriminator, loss 등을 정의해 놓은 것이다.
